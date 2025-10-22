@@ -11,6 +11,38 @@ from app.models.dto import ExtractedData
 from app.services.storage import save_image
 
 
+def _detect_heading_level(font_size: float, base_font_size: float) -> int:
+    """Detect heading level based on font size relative to base text.
+
+    Args:
+        font_size: Font size of the current text
+        base_font_size: Base font size for normal text
+
+    Returns:
+        Heading level (0 for normal text, 1-6 for headings)
+    """
+    # Calculate size ratio
+    ratio = font_size / base_font_size
+
+    # Define thresholds for heading levels
+    # Level 1: 2x or more (very large titles)
+    # Level 2: 1.5x - 2x (section titles)
+    # Level 3: 1.2x - 1.5x (subsection titles)
+    # Level 4: 1.1x - 1.2x (minor headings)
+    # Normal: < 1.1x
+
+    if ratio >= 2.0:
+        return 1
+    elif ratio >= 1.5:
+        return 2
+    elif ratio >= 1.2:
+        return 3
+    elif ratio >= 1.1:
+        return 4
+    else:
+        return 0  # Normal text
+
+
 def extract_pdf(file_path: Path) -> ExtractedData:
     """Extract text and images from PDF file with inline image positioning.
 
@@ -35,6 +67,25 @@ def extract_pdf(file_path: Path) -> ExtractedData:
             "subject": doc.metadata.get("subject", ""),
             "pages": str(doc.page_count),
         }
+
+        # First pass: collect all font sizes to determine what's "normal" text
+        all_font_sizes = []
+        for page in doc:
+            blocks = page.get_text("dict")["blocks"]
+            for block in blocks:
+                if block.get("type", 0) == 0:  # Text block
+                    for line in block.get("lines", []):
+                        for span in line.get("spans", []):
+                            size = span.get("size", 0)
+                            if size > 0:
+                                all_font_sizes.append(size)
+
+        # Calculate base font size (median to ignore outliers)
+        if all_font_sizes:
+            all_font_sizes.sort()
+            base_font_size = all_font_sizes[len(all_font_sizes) // 2]
+        else:
+            base_font_size = 12  # Default fallback
 
         # Process each page
         for page_num, page in enumerate(doc, start=1):
@@ -94,13 +145,34 @@ def extract_pdf(file_path: Path) -> ExtractedData:
                     continue
 
                 if block_type == 0:  # Text block
-                    # Extract text from lines
+                    # Extract text from lines with font size detection
                     lines = block.get("lines", [])
                     for line in lines:
                         spans = line.get("spans", [])
+
+                        # Get average font size for this line
+                        line_font_sizes = [s.get("size", base_font_size) for s in spans]
+                        avg_font_size = (
+                            sum(line_font_sizes) / len(line_font_sizes)
+                            if line_font_sizes
+                            else base_font_size
+                        )
+
                         line_text = "".join(span.get("text", "") for span in spans)
                         if line_text.strip():
-                            page_content.append(line_text)
+                            # Determine if this is a heading based on font size
+                            heading_level = _detect_heading_level(
+                                avg_font_size, base_font_size
+                            )
+
+                            if heading_level > 0:
+                                # Add heading marker
+                                page_content.append(
+                                    f"HEADING{heading_level}:{line_text.strip()}"
+                                )
+                            else:
+                                # Normal text
+                                page_content.append(line_text)
 
                 elif block_type == 1:  # Image block
                     # Find the image xref for this block
