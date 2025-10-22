@@ -17,11 +17,11 @@ from app.services.storage import (
     save_upload,
 )
 
-router = APIRouter(prefix="/convert", tags=["convert"])
+router = APIRouter(tags=["convert"])
 
 
 @router.post(
-    "/",
+    "/convert",
     response_model=ConvertResponse,
     summary="Convert PDF/DOCX to MediaWiki markup",
     description="Upload a PDF or DOCX file and receive MediaWiki formatted text with extracted images",

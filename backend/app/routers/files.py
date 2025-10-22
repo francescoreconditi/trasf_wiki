@@ -10,11 +10,11 @@ from fastapi.responses import FileResponse
 
 from app.core.config import config
 
-router = APIRouter(prefix="/files", tags=["files"])
+router = APIRouter(tags=["files"])
 
 
 @router.get(
-    "/output/{job_id}",
+    "/files/output/{job_id}",
     response_class=FileResponse,
     summary="Download converted MediaWiki text file",
 )
