@@ -74,8 +74,8 @@ def save_image(image_bytes: bytes, extension: str, base_name: str = "img") -> st
     Returns:
         Relative path for frontend access (e.g., '/immagini/img-uuid.png')
     """
-    # Generate unique filename
-    unique_id = str(uuid.uuid4())[:8]
+    # Generate unique filename with full UUID for guaranteed uniqueness
+    unique_id = str(uuid.uuid4())
     safe_base = sanitize_filename(base_name)
     filename = f"{safe_base}-{unique_id}.{extension.lower()}"
 
