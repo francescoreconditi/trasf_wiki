@@ -38,6 +38,15 @@ def extract_pdf(file_path: Path) -> ExtractedData:
 
         # Process each page
         for page_num, page in enumerate(doc, start=1):
+            # Get page dimensions to detect header/footer areas
+            page_rect = page.rect
+            page_height = page_rect.height
+
+            # Define header and footer margins (in points)
+            # Typical: 50-70 points (~1.7-2.4 cm) for header/footer
+            header_margin = 70  # Top margin to exclude
+            footer_margin = 70  # Bottom margin to exclude
+
             # Get page layout with text blocks and image positions
             blocks = page.get_text("dict")["blocks"]
 
@@ -70,6 +79,19 @@ def extract_pdf(file_path: Path) -> ExtractedData:
             page_content = []
             for block in sorted_blocks:
                 block_type = block.get("type", 0)
+                bbox = block.get("bbox", [0, 0, 0, 0])
+
+                # Check if block is in header or footer area
+                block_top = bbox[1]  # y0 coordinate (top of block)
+                block_bottom = bbox[3]  # y1 coordinate (bottom of block)
+
+                # Skip blocks in header area (top of page)
+                if block_top < header_margin:
+                    continue
+
+                # Skip blocks in footer area (bottom of page)
+                if block_bottom > (page_height - footer_margin):
+                    continue
 
                 if block_type == 0:  # Text block
                     # Extract text from lines
