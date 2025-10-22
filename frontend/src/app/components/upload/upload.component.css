@@ -1,0 +1,36 @@
+.upload-container {
+  padding: 20px;
+}
+
+h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.upload-form {
+  margin-bottom: 30px;
+}
+
+.file-info {
+  margin: 15px 0;
+  padding: 10px;
+  background: #ecf0f1;
+  border-radius: 4px;
+}
+
+button {
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+button.secondary {
+  background: #95a5a6;
+}
+
+button.secondary:hover:not(:disabled) {
+  background: #7f8c8d;
+}
+
+.result-section {
+  margin-top: 30px;
+}

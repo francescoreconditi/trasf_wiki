@@ -1,0 +1,22 @@
+<div class="result-container">
+  <h3>MediaWiki Text</h3>
+
+  <div class="warnings" *ngIf="result.warnings && result.warnings.length > 0">
+    <h4>Warnings:</h4>
+    <ul>
+      <li *ngFor="let warning of result.warnings">{{ warning }}</li>
+    </ul>
+  </div>
+
+  <div class="actions">
+    <button (click)="copyToClipboard()">Copy to Clipboard</button>
+    <button (click)="downloadAsFile()">Download as .wiki</button>
+  </div>
+
+  <textarea
+    [value]="result.mediawiki_text"
+    rows="20"
+    readonly
+    class="wiki-text"
+  ></textarea>
+</div>

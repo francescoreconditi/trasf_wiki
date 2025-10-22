@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv init:*)",
+      "Bash(uv add:*)",
+      "Bash(uv run ruff:*)",
+      "Bash(npm:*)",
+      "Bash(chmod:*)",
+      "Bash(cat:*)",
+      "Bash(dir:*)",
+      "Bash(python:*)",
+      "Bash(git remote add:*)",
+      "Bash(git rev-parse:*)",
+      "Read(//c/Progetti/**)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

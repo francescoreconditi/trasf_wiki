@@ -1,0 +1,12 @@
+<div class="gallery-container" *ngIf="images && images.length > 0">
+  <h3>Extracted Images ({{ images.length }})</h3>
+
+  <div class="image-grid">
+    <div class="image-item" *ngFor="let image of images; let i = index">
+      <img [src]="image" [alt]="'Extracted image ' + (i + 1)" />
+      <div class="image-info">
+        <span>{{ image.split('/').pop() }}</span>
+      </div>
+    </div>
+  </div>
+</div>
