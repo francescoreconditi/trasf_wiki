@@ -1,107 +1,107 @@
-# PDF/Word to MediaWiki Converter
+# Convertitore da PDF/Word a MediaWiki
 
-A full-stack application that converts PDF and Word (.docx) documents to MediaWiki markup format, extracting both text and images.
+Un'applicazione full-stack che converte documenti PDF e Word (.docx) in formato markup MediaWiki, estraendo sia il testo che le immagini.
 
-> **Note**: For detailed project analysis and architecture, see [Analisi.md](Analisi.md)
+> **Nota**: Per un'analisi dettagliata del progetto e dell'architettura, vedi [Analisi.md](Analisi.md)
 
-## Quick Start
+## Avvio Rapido
 
-### Option 1: Using Scripts (Recommended)
+### Opzione 1: Usando gli Script (Consigliato)
 
 **Windows:**
 ```cmd
-setup.bat          # First time only
-start-backend.bat  # Terminal 1
-start-frontend.bat # Terminal 2
+setup.bat          # Solo la prima volta
+start-backend.bat  # Terminale 1
+start-frontend.bat # Terminale 2
 ```
 
 **Linux/Mac:**
 ```bash
 chmod +x setup.sh start-backend.sh start-frontend.sh
-./setup.sh          # First time only
-./start-backend.sh  # Terminal 1
-./start-frontend.sh # Terminal 2
+./setup.sh          # Solo la prima volta
+./start-backend.sh  # Terminale 1
+./start-frontend.sh # Terminale 2
 ```
 
-### Option 2: Manual
+### Opzione 2: Manuale
 
 ```bash
 # Backend
 cd backend
-uv venv && source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+uv venv && source .venv/bin/activate  # o .venv\Scripts\activate su Windows
 uv sync
 uv run uvicorn app.main:app --reload --port 8000
 
-# Frontend (in new terminal)
+# Frontend (in un nuovo terminale)
 cd frontend
 npm install
 npm start
 ```
 
-Open http://localhost:4200 and start converting!
+Apri http://localhost:4200 e inizia a convertire!
 
-## Features
+## Funzionalità
 
-- **Document Conversion**: Converts PDF and DOCX files to MediaWiki markup
-- **Image Extraction**: Automatically extracts and saves images from documents
-- **MediaWiki Formatting**: Handles headings, tables, lists, and basic text formatting
-- **User-Friendly Interface**: Modern Angular frontend with drag-and-drop file upload
-- **API Documentation**: Interactive Scalar API documentation at `/scalar`
-- **Image Gallery**: Visual gallery of all extracted images
+- **Conversione Documenti**: Converte file PDF e DOCX in markup MediaWiki
+- **Estrazione Immagini**: Estrae e salva automaticamente le immagini dai documenti
+- **Formattazione MediaWiki**: Gestisce titoli, tabelle, liste e formattazione di base del testo
+- **Interfaccia User-Friendly**: Frontend Angular moderno con upload drag-and-drop
+- **Documentazione API**: Documentazione API interattiva Scalar su `/scalar`
+- **Galleria Immagini**: Galleria visuale di tutte le immagini estratte
 
-## Tech Stack
+## Stack Tecnologico
 
 ### Backend
-- **FastAPI**: Modern Python web framework
-- **PyMuPDF (fitz)**: PDF text and image extraction
-- **python-docx**: DOCX document processing
-- **Pydantic**: Data validation and settings management
-- **uv**: Fast Python package manager
+- **FastAPI**: Framework web Python moderno
+- **PyMuPDF (fitz)**: Estrazione testo e immagini da PDF
+- **python-docx**: Elaborazione documenti DOCX
+- **Pydantic**: Validazione dati e gestione configurazioni
+- **uv**: Package manager Python veloce
 
 ### Frontend
-- **Angular 18**: Modern web framework with standalone components
-- **TypeScript**: Type-safe JavaScript
-- **RxJS**: Reactive programming
+- **Angular 18**: Framework web moderno con componenti standalone
+- **TypeScript**: JavaScript type-safe
+- **RxJS**: Programmazione reattiva
 
-## Project Structure
+## Struttura del Progetto
 
 ```
 .
 ├── backend/
 │   ├── app/
-│   │   ├── core/           # Configuration
-│   │   ├── models/         # Pydantic DTOs
-│   │   ├── services/       # Business logic
-│   │   ├── routers/        # API endpoints
-│   │   ├── static/         # Static files (images)
-│   │   └── main.py         # FastAPI app
-│   ├── uploads/            # Temporary uploads
-│   ├── output/             # Converted files
-│   └── pyproject.toml      # Python dependencies
+│   │   ├── core/           # Configurazione
+│   │   ├── models/         # DTO Pydantic
+│   │   ├── services/       # Logica di business
+│   │   ├── routers/        # Endpoint API
+│   │   ├── static/         # File statici (immagini)
+│   │   └── main.py         # App FastAPI
+│   ├── uploads/            # Upload temporanei
+│   ├── output/             # File convertiti
+│   └── pyproject.toml      # Dipendenze Python
 │
 ├── frontend/
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── components/ # Angular components
-│   │   │   └── services/   # API services
-│   │   └── environments/   # Environment configs
-│   └── package.json        # Node dependencies
+│   │   │   ├── components/ # Componenti Angular
+│   │   │   └── services/   # Servizi API
+│   │   └── environments/   # Configurazioni ambiente
+│   └── package.json        # Dipendenze Node
 │
-├── CLAUDE.md              # Development guidelines
-└── README.md              # This file
+├── CLAUDE.md              # Linee guida sviluppo
+└── README.md              # Questo file
 ```
 
-## Installation & Setup
+## Installazione e Setup
 
-### Prerequisites
+### Prerequisiti
 
 - **Python 3.12+**
-- **Node.js 18+** and npm
-- **uv** package manager for Python
+- **Node.js 18+** e npm
+- **uv** package manager per Python
 
-#### Installing uv
+#### Installare uv
 
-If you don't have `uv` installed:
+Se non hai `uv` installato:
 
 **Windows (PowerShell):**
 ```powershell
@@ -113,24 +113,24 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Or via pip:
+Oppure tramite pip:
 ```bash
 pip install uv
 ```
 
-### Backend Setup
+### Setup Backend
 
-1. Navigate to backend directory:
+1. Vai alla directory backend:
 ```bash
 cd backend
 ```
 
-2. Create virtual environment with uv:
+2. Crea ambiente virtuale con uv:
 ```bash
 uv venv
 ```
 
-3. Activate virtual environment:
+3. Attiva ambiente virtuale:
 ```bash
 # Windows
 .venv\Scripts\activate
@@ -139,286 +139,286 @@ uv venv
 source .venv/bin/activate
 ```
 
-4. Install dependencies:
+4. Installa dipendenze:
 ```bash
 uv sync
 ```
 
-5. Install ruff for code formatting:
+5. Installa ruff per la formattazione del codice:
 ```bash
 uv pip install ruff
 ```
 
-### Frontend Setup
+### Setup Frontend
 
-1. Navigate to frontend directory:
+1. Vai alla directory frontend:
 ```bash
 cd frontend
 ```
 
-2. Install dependencies:
+2. Installa dipendenze:
 ```bash
 npm install
 ```
 
-## Running the Application
+## Eseguire l'Applicazione
 
-### Start Backend Server
+### Avviare il Server Backend
 
 ```bash
 cd backend
 uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-The backend will be available at:
+Il backend sarà disponibile su:
 - API: http://localhost:8000
 - Swagger UI: http://localhost:8000/docs
 - Scalar Docs: http://localhost:8000/scalar
 - ReDoc: http://localhost:8000/redoc
 
-### Start Frontend Server
+### Avviare il Server Frontend
 
 ```bash
 cd frontend
 npm start
 ```
 
-The frontend will be available at: http://localhost:4200
+Il frontend sarà disponibile su: http://localhost:4200
 
-## Usage
+## Utilizzo
 
-1. Open http://localhost:4200 in your browser
-2. Click "Choose File" and select a PDF or DOCX file
-3. Click "Convert to MediaWiki"
-4. View the converted MediaWiki text in the textarea
-5. Use "Copy to Clipboard" or "Download as .wiki" buttons
-6. View extracted images in the gallery below
+1. Apri http://localhost:4200 nel browser
+2. Clicca "Choose File" e seleziona un file PDF o DOCX
+3. Clicca "Convert to MediaWiki"
+4. Visualizza il testo MediaWiki convertito nella textarea
+5. Usa i pulsanti "Copy to Clipboard" o "Download as .wiki"
+6. Visualizza le immagini estratte nella galleria sottostante
 
-## API Endpoints
+## Endpoint API
 
 ### Health Check
 ```
 GET /api/health
 ```
-Returns server health status.
+Restituisce lo stato di salute del server.
 
-### Convert Document
+### Converti Documento
 ```
 POST /api/convert
 Content-Type: multipart/form-data
 
-file: <PDF or DOCX file>
+file: <file PDF o DOCX>
 ```
-Returns:
+Restituisce:
 ```json
 {
   "id": "job-uuid",
   "filename": "document.pdf",
-  "mediawiki_text": "= Heading =\n\nText content...",
+  "mediawiki_text": "= Titolo =\n\nContenuto testo...",
   "images": ["/immagini/img-123.png"],
   "warnings": []
 }
 ```
 
-### Download Output
+### Scarica Output
 ```
 GET /api/files/output/{job_id}
 ```
-Downloads the converted .wiki file.
+Scarica il file .wiki convertito.
 
-### Static Images
+### Immagini Statiche
 ```
 GET /immagini/{filename}
 ```
-Serves extracted image files.
+Serve i file immagine estratti.
 
-## Development Guidelines
+## Linee Guida per lo Sviluppo
 
-See [CLAUDE.md](CLAUDE.md) for detailed development guidelines including:
-- Code formatting with ruff (mandatory)
-- Using Pydantic instead of dataclasses
-- File length limits (max 1000 lines)
-- Best practices for Python and Angular
+Vedi [CLAUDE.md](CLAUDE.md) per le linee guida dettagliate di sviluppo incluse:
+- Formattazione codice con ruff (obbligatorio)
+- Uso di Pydantic invece di dataclasses
+- Limiti lunghezza file (max 1000 righe)
+- Best practices per Python e Angular
 
-## Code Formatting
+## Formattazione del Codice
 
-After editing any Python file, run:
+Dopo aver modificato un file Python, esegui:
 ```bash
 cd backend
 uv run ruff format path/to/file.py
 ```
 
-## Configuration
+## Configurazione
 
-Backend configuration is managed in `backend/app/core/config.py`:
+La configurazione del backend è gestita in `backend/app/core/config.py`:
 
-- `max_file_size_mb`: Maximum upload size (default: 50MB)
-- `allowed_extensions`: Supported file types (default: .pdf, .docx)
-- `cors_origins`: CORS allowed origins (default: all)
+- `max_file_size_mb`: Dimensione massima upload (default: 50MB)
+- `allowed_extensions`: Tipi di file supportati (default: .pdf, .docx)
+- `cors_origins`: Origini CORS consentite (default: tutte)
 
-## MediaWiki Conversion Rules
+## Regole di Conversione MediaWiki
 
-The converter applies these MediaWiki formatting rules:
+Il convertitore applica queste regole di formattazione MediaWiki:
 
-- **Headings**: `= H1 =`, `== H2 ==`, etc.
-- **Bold**: `'''text'''`
-- **Italic**: `''text''`
-- **Lists**: Numbered (`#`) and bulleted (`*`)
-- **Tables**: `{| class="wikitable"` format
-- **Links**: `[http://url text]`
-- **Images**: `[[File:filename|thumb]]`
+- **Titoli**: `= H1 =`, `== H2 ==`, ecc.
+- **Grassetto**: `'''testo'''`
+- **Corsivo**: `''testo''`
+- **Liste**: Numerate (`#`) e puntate (`*`)
+- **Tabelle**: formato `{| class="wikitable"`
+- **Link**: `[http://url testo]`
+- **Immagini**: `[[File:nomefile|thumb]]`
 
-### Example Output
+### Esempio Output
 
-**Input** (DOCX with heading "Introduction"):
+**Input** (DOCX con titolo "Introduzione"):
 ```
-Introduction
-This is a sample document with bold text and a link to https://example.com
+Introduzione
+Questo è un documento di esempio con testo in grassetto e un link a https://example.com
 ```
 
 **Output** (MediaWiki):
 ```wiki
-== Introduction ==
+== Introduzione ==
 
-This is a sample document with bold text and a link to [https://example.com]
+Questo è un documento di esempio con testo in grassetto e un link a [https://example.com]
 
-== Images ==
+== Immagini ==
 
-[[File:docx_img0-a1b2c3d4.png|thumb|Extracted image]]
+[[File:docx_img0-a1b2c3d4.png|thumb|Immagine estratta]]
 ```
 
-## Testing the API
+## Testare l'API
 
-You can test the API directly using curl or tools like Postman:
+Puoi testare l'API direttamente usando curl o strumenti come Postman:
 
 ```bash
 # Health check
 curl http://localhost:8000/api/health
 
-# Convert a file
+# Convertire un file
 curl -X POST http://localhost:8000/api/convert \
-  -F "file=@/path/to/document.pdf"
+  -F "file=@/percorso/al/documento.pdf"
 
-# Download output
+# Scaricare output
 curl http://localhost:8000/api/files/output/{job-id} -o output.wiki
 ```
 
-## Known Limitations
+## Limitazioni Note
 
-- **PDF Text Extraction**: Scanned PDFs without OCR may not extract text properly
-- **Complex Tables**: Very complex table layouts may not convert perfectly
-- **Font Styling**: Bold/italic detection is limited in PDF extraction
-- **Image Quality**: Images are extracted as-is; no optimization is performed
-- **Large Files**: Files over 50MB are rejected (configurable)
+- **Estrazione Testo PDF**: PDF scannerizzati senza OCR potrebbero non estrarre correttamente il testo
+- **Tabelle Complesse**: Layout di tabelle molto complessi potrebbero non convertirsi perfettamente
+- **Stili Font**: Il rilevamento grassetto/corsivo è limitato nell'estrazione PDF
+- **Qualità Immagini**: Le immagini sono estratte così come sono; non viene eseguita ottimizzazione
+- **File Grandi**: File oltre 50MB vengono rifiutati (configurabile)
 
-## Troubleshooting
+## Risoluzione Problemi
 
-### Backend Issues
+### Problemi Backend
 
-**`uv` command not found:**
+**Comando `uv` non trovato:**
 ```bash
-# Ensure uv is in PATH or reinstall
+# Assicurati che uv sia nel PATH o reinstalla
 pip install uv
 ```
 
-**Port already in use:**
+**Porta già in uso:**
 ```bash
-# Use different port
+# Usa una porta diversa
 uv run uvicorn app.main:app --port 8001
 ```
 
-**Import errors or module not found:**
+**Errori di import o modulo non trovato:**
 ```bash
-# Reinstall dependencies
+# Reinstalla dipendenze
 cd backend
 rm -rf .venv
 uv venv
 uv sync
 ```
 
-**PyMuPDF installation fails on Windows:**
+**Installazione PyMuPDF fallisce su Windows:**
 ```bash
-# Try installing build tools first
-# Download from: https://visualstudio.microsoft.com/visual-cpp-build-tools/
-# Then run: uv sync
+# Prova a installare prima gli strumenti di build
+# Scarica da: https://visualstudio.microsoft.com/visual-cpp-build-tools/
+# Poi esegui: uv sync
 ```
 
 **"No module named 'app'":**
 ```bash
-# Make sure you're in the backend directory
+# Assicurati di essere nella directory backend
 cd backend
 uv run uvicorn app.main:app --reload
 ```
 
-### Frontend Issues
+### Problemi Frontend
 
-**Port 4200 already in use:**
+**Porta 4200 già in uso:**
 ```bash
-# Use different port
+# Usa una porta diversa
 ng serve --port 4201
 ```
 
-**Module not found or npm errors:**
+**Modulo non trovato o errori npm:**
 ```bash
-# Clear cache and reinstall
+# Pulisci cache e reinstalla
 cd frontend
 rm -rf node_modules package-lock.json
 npm install
 ```
 
-**Angular CLI not found:**
+**Angular CLI non trovato:**
 ```bash
-# Install Angular CLI globally
+# Installa Angular CLI globalmente
 npm install -g @angular/cli
 ```
 
-**Proxy errors (CORS issues):**
-- Ensure backend is running on port 8000
-- Check [proxy.conf.json](frontend/proxy.conf.json) configuration
-- Restart frontend dev server after backend changes
+**Errori proxy (problemi CORS):**
+- Assicurati che il backend sia in esecuzione sulla porta 8000
+- Controlla la configurazione di [proxy.conf.json](frontend/proxy.conf.json)
+- Riavvia il server dev frontend dopo modifiche al backend
 
-### General Issues
+### Problemi Generali
 
-**Images not loading:**
-- Check that `backend/app/static/immagini/` directory exists
-- Verify CORS is enabled in backend
-- Check browser console for 404 errors
+**Immagini non si caricano:**
+- Verifica che esista la directory `backend/app/static/immagini/`
+- Verifica che CORS sia abilitato nel backend
+- Controlla la console del browser per errori 404
 
-**Conversion takes too long:**
-- Large PDFs with many images can take time
-- Check backend console for progress/errors
-- Consider increasing timeout in frontend if needed
+**La conversione richiede troppo tempo:**
+- PDF grandi con molte immagini possono richiedere tempo
+- Controlla la console del backend per progressi/errori
+- Considera di aumentare il timeout nel frontend se necessario
 
 ## Roadmap
 
-Future enhancements (see [Analisi.md](Analisi.md) for details):
+Miglioramenti futuri (vedi [Analisi.md](Analisi.md) per dettagli):
 
-- [ ] Support for ODT and RTF formats
-- [ ] OCR integration for scanned PDFs (Tesseract)
-- [ ] Async job queue for large files (Celery/RQ)
-- [ ] Live MediaWiki preview in frontend
-- [ ] User authentication (JWT)
-- [ ] Batch file processing
-- [ ] Custom conversion rules configuration
+- [ ] Supporto per formati ODT e RTF
+- [ ] Integrazione OCR per PDF scannerizzati (Tesseract)
+- [ ] Coda job asincrona per file grandi (Celery/RQ)
+- [ ] Anteprima MediaWiki live nel frontend
+- [ ] Autenticazione utenti (JWT)
+- [ ] Elaborazione batch di file
+- [ ] Configurazione regole di conversione personalizzate
 
-## Contributing
+## Contribuire
 
-Follow the guidelines in [CLAUDE.md](CLAUDE.md) for code style and best practices:
+Segui le linee guida in [CLAUDE.md](CLAUDE.md) per stile del codice e best practices:
 
-1. Use `uv` for all Python dependencies
-2. Use Pydantic models instead of dataclasses
-3. Run `ruff format` after editing Python files
-4. Keep files under 1000 lines
-5. Follow type hints and docstring conventions
+1. Usa `uv` per tutte le dipendenze Python
+2. Usa modelli Pydantic invece di dataclasses
+3. Esegui `ruff format` dopo aver modificato file Python
+4. Mantieni i file sotto 1000 righe
+5. Segui le convenzioni di type hints e docstring
 
-## License
+## Licenza
 
-This project is provided as-is for conversion of PDF and Word documents to MediaWiki format.
+Questo progetto è fornito così com'è per la conversione di documenti PDF e Word in formato MediaWiki.
 
-## Output Directory Structure
+## Struttura Directory Output
 
-Files are saved in the following locations:
-- **Images**: `output/immagini/` - All extracted images
-- **Wiki text**: `output/testo_wiki/` - Converted files named as `original_filename.wiki`
+I file vengono salvati nelle seguenti posizioni:
+- **Immagini**: `output/immagini/` - Tutte le immagini estratte
+- **Testo wiki**: `output/testo_wiki/` - File convertiti denominati come `nome_file_originale.wiki`
 
-Example: If you upload `pippo.pdf`, the converted text will be saved as `output/testo_wiki/pippo.wiki`
+Esempio: Se carichi `pippo.pdf`, il testo convertito sarà salvato come `output/testo_wiki/pippo.wiki`
