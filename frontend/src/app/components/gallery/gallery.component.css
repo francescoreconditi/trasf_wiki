@@ -2,9 +2,35 @@
   margin: 30px 0;
 }
 
+.gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 h3 {
   color: #2c3e50;
-  margin-bottom: 20px;
+  margin: 0;
+}
+
+.download-all-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.download-all-btn:hover {
+  background-color: #2980b9;
+}
+
+.download-all-btn:active {
+  background-color: #21618c;
 }
 
 .image-grid {

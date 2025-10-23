@@ -63,16 +63,22 @@ def save_upload(file: UploadFile) -> Path:
     return upload_path
 
 
-def save_image(image_bytes: bytes, extension: str, base_name: str = "img") -> str:
+def save_image(
+    image_bytes: bytes,
+    extension: str,
+    base_name: str = "img",
+    job_id: str | None = None,
+) -> str:
     """Save image bytes to images directory.
 
     Args:
         image_bytes: Image binary data
         extension: File extension (e.g., 'png', 'jpg')
         base_name: Base name for the image file
+        job_id: Optional job ID to organize images in subdirectories
 
     Returns:
-        Relative path for frontend access (e.g., '/immagini/img-uuid.png')
+        Relative path for frontend access (e.g., '/immagini/job_id/img-uuid.png')
     """
     # Generate unique filename with full UUID for guaranteed uniqueness
     unique_id = str(uuid.uuid4())
@@ -81,13 +87,23 @@ def save_image(image_bytes: bytes, extension: str, base_name: str = "img") -> st
 
     # Save to images directory (in project root)
     images_path = config.get_project_path(config.images_dir)
-    file_path = images_path / filename
 
+    # If job_id is provided, create subdirectory
+    if job_id:
+        job_images_path = images_path / job_id
+        job_images_path.mkdir(parents=True, exist_ok=True)
+        file_path = job_images_path / filename
+        relative_url = f"/immagini/{job_id}/{filename}"
+    else:
+        file_path = images_path / filename
+        relative_url = f"/immagini/{filename}"
+
+    # Write image to disk
     with file_path.open("wb") as f:
         f.write(image_bytes)
 
     # Return relative URL for frontend
-    return f"/immagini/{filename}"
+    return relative_url
 
 
 def save_output(original_filename: str, wikitext: str) -> Path:

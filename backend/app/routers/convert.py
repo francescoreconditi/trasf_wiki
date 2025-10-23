@@ -61,6 +61,9 @@ async def convert_file(file: UploadFile = File(...)) -> ConvertResponse:
             detail=f"File too large. Maximum size: {config.max_file_size_mb}MB",
         )
 
+    # Generate job_id BEFORE extraction to organize images by job
+    job_id = generate_job_id()
+
     # Save uploaded file
     try:
         upload_path = save_upload(file)
@@ -69,12 +72,12 @@ async def convert_file(file: UploadFile = File(...)) -> ConvertResponse:
             status_code=500, detail=f"Failed to save upload: {str(e)}"
         ) from e
 
-    # Extract content based on file type
+    # Extract content based on file type (pass job_id to organize images)
     try:
         if ext == "pdf":
-            extracted = extract_pdf(upload_path)
+            extracted = extract_pdf(upload_path, job_id)
         elif ext == "docx":
-            extracted = extract_docx(upload_path)
+            extracted = extract_docx(upload_path, job_id)
         else:
             raise HTTPException(status_code=400, detail="Unsupported file type")
     except Exception as e:
@@ -93,7 +96,6 @@ async def convert_file(file: UploadFile = File(...)) -> ConvertResponse:
         ) from e
 
     # Save output with original filename
-    job_id = generate_job_id()
     try:
         save_output(file.filename, wikitext)
     except Exception as e:

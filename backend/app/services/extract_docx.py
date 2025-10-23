@@ -113,11 +113,12 @@ def _extract_formatted_text(paragraph, image_map: dict) -> str:
     return "".join(result_parts)
 
 
-def extract_docx(file_path: Path) -> ExtractedData:
+def extract_docx(file_path: Path, job_id: str | None = None) -> ExtractedData:
     """Extract text and images from DOCX file.
 
     Args:
         file_path: Path to DOCX file
+        job_id: Optional job ID for organizing extracted images
 
     Returns:
         ExtractedData with text, images, and metadata
@@ -290,7 +291,7 @@ def _extract_images_and_create_map(file_path: Path, doc) -> dict[str, str]:
 
                             # Save with descriptive name
                             base_name = f"docx_{target.rsplit('.', 1)[0]}"
-                            image_path = save_image(image_bytes, ext, base_name)
+                            image_path = save_image(image_bytes, ext, base_name, job_id)
 
                             # Keep the full URL path for frontend access
                             image_map[rel_id] = image_path

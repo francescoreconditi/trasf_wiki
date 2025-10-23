@@ -1,5 +1,10 @@
 <div class="gallery-container" *ngIf="images && images.length > 0">
-  <h3>Extracted Images ({{ images.length }})</h3>
+  <div class="gallery-header">
+    <h3>Extracted Images ({{ images.length }})</h3>
+    <button class="download-all-btn" (click)="downloadAllImages()" *ngIf="jobId">
+      📥 Download All Images
+    </button>
+  </div>
 
   <div class="image-grid">
     <div class="image-item" *ngFor="let image of images; let i = index">

@@ -28,4 +28,8 @@ export class ApiService {
   downloadOutput(jobId: string): string {
     return `${this.baseUrl}/files/output/${jobId}`;
   }
+
+  downloadAllImages(jobId: string): string {
+    return `${this.baseUrl}/files/images/${jobId}/download-all`;
+  }
 }

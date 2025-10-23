@@ -43,11 +43,12 @@ def _detect_heading_level(font_size: float, base_font_size: float) -> int:
         return 0  # Normal text
 
 
-def extract_pdf(file_path: Path) -> ExtractedData:
+def extract_pdf(file_path: Path, job_id: str | None = None) -> ExtractedData:
     """Extract text and images from PDF file with inline image positioning.
 
     Args:
         file_path: Path to PDF file
+        job_id: Optional job ID for organizing extracted images
 
     Returns:
         ExtractedData with text, images, and metadata
@@ -113,7 +114,7 @@ def extract_pdf(file_path: Path) -> ExtractedData:
                     image_ext = base_image["ext"]
 
                     base_name = f"pdf_page{page_num}_img{img_index}"
-                    image_path = save_image(image_bytes, image_ext, base_name)
+                    image_path = save_image(image_bytes, image_ext, base_name, job_id)
                     images_list.append(image_path)
                     image_map[xref] = image_path
 

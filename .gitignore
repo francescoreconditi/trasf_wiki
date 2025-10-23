@@ -33,7 +33,7 @@ MANIFEST
 
 # PyInstaller
 *.manifest
-*.spec
+# Note: keep build_exe.spec (our custom spec file)
 
 # Installer logs
 pip-log.txt
@@ -297,3 +297,19 @@ output/testo_wiki/
 
 # Upload directory
 backend/uploads/
+
+# Images extracted from documents
+immagini/
+
+# ============================================
+# Eseguibile Windows Build
+# ============================================
+
+# PyInstaller build outputs (already covered by dist/ and build/ above)
+# dist/              # Eseguibile finale
+# build/             # File temporanei PyInstaller
+
+# Frontend build output (keep this for development testing)
+# frontend/dist/     # Build Angular (needed for exe)
+
+# Note: build_exe.spec, build.bat, build.ps1 are kept in repo

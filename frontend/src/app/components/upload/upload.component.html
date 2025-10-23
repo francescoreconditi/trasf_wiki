@@ -32,6 +32,6 @@
 
   <div class="result-section" *ngIf="result">
     <app-result [result]="result"></app-result>
-    <app-gallery [images]="result.images"></app-gallery>
+    <app-gallery [images]="result.images" [jobId]="result.id"></app-gallery>
   </div>
 </div>
