@@ -140,7 +140,7 @@ def extract_docx(file_path: Path, job_id: str | None = None) -> ExtractedData:
             metadata["subject"] = doc.core_properties.subject or ""
 
         # First, extract all images and create a map of rId -> filename
-        image_map = _extract_images_and_create_map(file_path, doc)
+        image_map = _extract_images_and_create_map(file_path, doc, job_id)
 
         # Extract text from paragraphs with formatting
         for para in doc.paragraphs:
@@ -235,12 +235,15 @@ def extract_docx(file_path: Path, job_id: str | None = None) -> ExtractedData:
     return ExtractedData(text=full_text, images=images_list, metadata=metadata)
 
 
-def _extract_images_and_create_map(file_path: Path, doc) -> dict[str, str]:
+def _extract_images_and_create_map(
+    file_path: Path, doc, job_id: str | None = None
+) -> dict[str, str]:
     """Extract images from DOCX and create rId -> filename map.
 
     Args:
         file_path: Path to DOCX file
         doc: python-docx Document object
+        job_id: Optional job ID for organizing images
 
     Returns:
         Dictionary mapping relationship IDs to saved image filenames
@@ -255,15 +258,23 @@ def _extract_images_and_create_map(file_path: Path, doc) -> dict[str, str]:
             # DOCX stores images in word/media/
             media_files = [f for f in zip_ref.namelist() if f.startswith("word/media/")]
 
+            print(f"[DOCX DEBUG] Found {len(media_files)} media files")
+            print(f"[DOCX DEBUG] Total relationships: {len(rels)}")
+
             # Create a map of target -> file path
             target_to_file = {}
             for media_file in media_files:
                 filename = media_file.split("/")[-1]
                 target_to_file[filename] = media_file
+                print(f"[DOCX DEBUG] Media file: {filename}")
 
             # Process relationships to map rId to saved image files
+            image_rels = [r for r in rels.items() if "image" in r[1].reltype]
+            print(f"[DOCX DEBUG] Found {len(image_rels)} image relationships")
+
             for rel_id, rel in rels.items():
                 if "image" in rel.reltype:
+                    print(f"[DOCX DEBUG] Processing image relationship: {rel_id}")
                     try:
                         # Get the target filename from the relationship
                         # rel.target_ref is a string like '../media/image1.png'
@@ -283,6 +294,7 @@ def _extract_images_and_create_map(file_path: Path, doc) -> dict[str, str]:
                             )
 
                         if target in target_to_file:
+                            print(f"[DOCX DEBUG] Found target {target} in media files")
                             # Read and save image
                             image_bytes = zip_ref.read(target_to_file[target])
                             ext = target.split(".")[-1].lower()
@@ -295,11 +307,25 @@ def _extract_images_and_create_map(file_path: Path, doc) -> dict[str, str]:
 
                             # Keep the full URL path for frontend access
                             image_map[rel_id] = image_path
+                            print(f"[DOCX DEBUG] Saved image: {image_path}")
+                        else:
+                            print(
+                                f"[DOCX DEBUG] Target {target} NOT found in media files!"
+                            )
 
                     except Exception as e:
-                        print(f"Error extracting image for rel {rel_id}: {e}")
+                        print(
+                            f"[DOCX ERROR] Error extracting image for rel {rel_id}: {e}"
+                        )
+                        import traceback
+
+                        traceback.print_exc()
 
     except Exception as e:
-        print(f"Error accessing DOCX images: {e}")
+        print(f"[DOCX ERROR] Error accessing DOCX images: {e}")
+        import traceback
 
+        traceback.print_exc()
+
+    print(f"[DOCX DEBUG] Total images extracted: {len(image_map)}")
     return image_map
