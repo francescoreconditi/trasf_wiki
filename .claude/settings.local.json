@@ -37,7 +37,8 @@
       "Bash(tasklist:*)",
       "Bash(findstr:*)",
       "Bash(cmd.exe /c \"tasklist | findstr ConvertitorePDF\")",
-      "Bash(uv run:*)"
+      "Bash(uv run:*)",
+      "Read(//c/temp/**)"
     ],
     "deny": [],
     "ask": []

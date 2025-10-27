@@ -148,18 +148,62 @@ def extract_pdf(file_path: Path, job_id: str | None = None) -> ExtractedData:
                 if block_type == 0:  # Text block
                     # Extract text from lines with font size detection
                     lines = block.get("lines", [])
-                    for line in lines:
-                        spans = line.get("spans", [])
 
-                        # Get average font size for this line
-                        line_font_sizes = [s.get("size", base_font_size) for s in spans]
+                    # Group lines by Y coordinate to handle tab-separated words on same line
+                    grouped_lines = []
+                    current_group = []
+                    current_y = None
+                    y_tolerance = (
+                        2  # Points tolerance for considering lines on same visual row
+                    )
+
+                    for line in lines:
+                        bbox = line.get("bbox", [0, 0, 0, 0])
+                        line_y = bbox[1]  # Top Y coordinate
+
+                        if current_y is None or abs(line_y - current_y) <= y_tolerance:
+                            # Same visual line - add to current group
+                            current_group.append(line)
+                            if current_y is None:
+                                current_y = line_y
+                        else:
+                            # New visual line - save previous group and start new one
+                            if current_group:
+                                grouped_lines.append(current_group)
+                            current_group = [line]
+                            current_y = line_y
+
+                    # Don't forget the last group
+                    if current_group:
+                        grouped_lines.append(current_group)
+
+                    # Process each group of lines (visual rows)
+                    for line_group in grouped_lines:
+                        # Merge all spans from all lines in the group
+                        all_spans = []
+                        for line in line_group:
+                            all_spans.extend(line.get("spans", []))
+
+                        if not all_spans:
+                            continue
+
+                        # Get average font size for this visual line
+                        line_font_sizes = [
+                            s.get("size", base_font_size) for s in all_spans
+                        ]
                         avg_font_size = (
                             sum(line_font_sizes) / len(line_font_sizes)
                             if line_font_sizes
                             else base_font_size
                         )
 
-                        line_text = "".join(span.get("text", "") for span in spans)
+                        # Join text from all spans, replacing multiple spaces/tabs with single space
+                        line_text = " ".join(
+                            span.get("text", "").strip()
+                            for span in all_spans
+                            if span.get("text", "").strip()
+                        )
+
                         if line_text.strip():
                             # Determine if this is a heading based on font size
                             heading_level = _detect_heading_level(
