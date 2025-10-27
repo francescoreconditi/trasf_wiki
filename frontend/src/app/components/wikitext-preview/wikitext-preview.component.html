@@ -1,0 +1,22 @@
+<div class="preview-container">
+  <!-- Messaggio se non c'è contenuto -->
+  <div *ngIf="!wikitext || wikitext.trim() === ''" class="empty-state">
+    <p>Nessun contenuto da visualizzare in anteprima</p>
+  </div>
+
+  <!-- Preview renderizzata -->
+  <div
+    *ngIf="wikitext && wikitext.trim() !== ''"
+    class="wiki-preview"
+    [class.has-error]="hasError"
+    [innerHTML]="renderedHtml">
+  </div>
+
+  <!-- Nota informativa -->
+  <div *ngIf="wikitext && !hasError" class="preview-note">
+    <small>
+      <strong>Nota:</strong> Questa è un'anteprima approssimativa.
+      Alcune funzionalità avanzate di MediaWiki potrebbero non essere supportate.
+    </small>
+  </div>
+</div>

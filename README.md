@@ -1,6 +1,6 @@
-# Convertitore da PDF/Word a MediaWiki
+# Convertitore Documenti a MediaWiki
 
-Un'applicazione full-stack che converte documenti PDF e Word (.docx) in formato markup MediaWiki, estraendo sia il testo che le immagini.
+Un'applicazione full-stack che converte documenti (PDF, DOCX, ODT, RTF) in formato markup MediaWiki, estraendo sia il testo che le immagini.
 
 > **Nota**: Per un'analisi dettagliata del progetto e dell'architettura, vedi [Analisi.md](Analisi.md)
 
@@ -42,8 +42,9 @@ Apri http://localhost:4200 e inizia a convertire!
 
 ## Funzionalità
 
-- **Conversione Documenti**: Converte file PDF e DOCX in markup MediaWiki
-- **Estrazione Immagini**: Estrae e salva automaticamente le immagini dai documenti
+- **Conversione Documenti**: Converte file PDF, DOCX, ODT e RTF in markup MediaWiki
+- **Estrazione Immagini**: Estrae e salva automaticamente le immagini dai documenti (PDF, DOCX, ODT)
+- **Preview Live**: Anteprima renderizzata stile Wikipedia del markup MediaWiki
 - **Formattazione MediaWiki**: Gestisce titoli, tabelle, liste e formattazione di base del testo
 - **Interfaccia User-Friendly**: Frontend Angular moderno con upload drag-and-drop
 - **Documentazione API**: Documentazione API interattiva Scalar su `/scalar`
@@ -55,6 +56,8 @@ Apri http://localhost:4200 e inizia a convertire!
 - **FastAPI**: Framework web Python moderno
 - **PyMuPDF (fitz)**: Estrazione testo e immagini da PDF
 - **python-docx**: Elaborazione documenti DOCX
+- **odfpy**: Elaborazione documenti ODT (OpenDocument Text)
+- **striprtf**: Estrazione testo da file RTF
 - **Pydantic**: Validazione dati e gestione configurazioni
 - **uv**: Package manager Python veloce
 
@@ -188,9 +191,11 @@ Il frontend sarà disponibile su: http://localhost:4200
 ## Utilizzo
 
 1. Apri http://localhost:4200 nel browser
-2. Clicca "Choose File" e seleziona un file PDF o DOCX
+2. Clicca "Choose File" e seleziona un file PDF, DOCX, ODT o RTF
 3. Clicca "Convert to MediaWiki"
-4. Visualizza il testo MediaWiki convertito nella textarea
+4. Visualizza il testo MediaWiki convertito:
+   - **Tab "Raw Markup"**: Testo MediaWiki grezzo
+   - **Tab "Preview"**: Anteprima renderizzata stile Wikipedia
 5. Usa i pulsanti "Copy to Clipboard" o "Download as .wiki"
 6. Visualizza le immagini estratte nella galleria sottostante
 
@@ -305,11 +310,26 @@ curl http://localhost:8000/api/files/output/{job-id} -o output.wiki
 
 ## Limitazioni Note
 
-- **Estrazione Testo PDF**: PDF scannerizzati senza OCR potrebbero non estrarre correttamente il testo
-- **Tabelle Complesse**: Layout di tabelle molto complessi potrebbero non convertirsi perfettamente
-- **Stili Font**: Il rilevamento grassetto/corsivo è limitato nell'estrazione PDF
-- **Qualità Immagini**: Le immagini sono estratte così come sono; non viene eseguita ottimizzazione
+### Generali
 - **File Grandi**: File oltre 50MB vengono rifiutati (configurabile)
+- **Qualità Immagini**: Le immagini sono estratte così come sono; non viene eseguita ottimizzazione
+- **Tabelle Complesse**: Layout di tabelle molto complessi potrebbero non convertirsi perfettamente
+
+### Per Formato
+- **PDF**:
+  - PDF scannerizzati senza OCR potrebbero non estrarre correttamente il testo
+  - Il rilevamento grassetto/corsivo è limitato
+- **RTF**:
+  - **Immagini embedded NON supportate** (consigliato convertire in DOCX per estrazione immagini)
+  - Rilevamento heading basato su euristiche
+- **ODT**:
+  - Template e stili complessi potrebbero non essere interpretati correttamente
+- **DOCX**: Nessuna limitazione significativa
+
+### Preview MediaWiki
+- Template MediaWiki non supportati ({{Template}})
+- Parser functions non supportate ({{#if:}})
+- Magic words non supportati (__NOTOC__)
 
 ## Risoluzione Problemi
 
@@ -393,13 +413,14 @@ npm install -g @angular/cli
 
 Miglioramenti futuri (vedi [Analisi.md](Analisi.md) per dettagli):
 
-- [ ] Supporto per formati ODT e RTF
+- [x] Supporto per formati ODT e RTF ✅ **COMPLETATO**
+- [x] Anteprima MediaWiki live nel frontend ✅ **COMPLETATO**
 - [ ] Integrazione OCR per PDF scannerizzati (Tesseract)
 - [ ] Coda job asincrona per file grandi (Celery/RQ)
-- [ ] Anteprima MediaWiki live nel frontend
 - [ ] Autenticazione utenti (JWT)
 - [ ] Elaborazione batch di file
 - [ ] Configurazione regole di conversione personalizzate
+- [ ] Editor WYSIWYG per modifica diretta del markup
 
 ## Contribuire
 

@@ -441,8 +441,83 @@ export class GalleryComponent {
 
 # ROADMAP (estensioni)
 
-* Supporto **ODT**, **RTF**
+* ✅ Supporto **ODT**, **RTF** - **IMPLEMENTATO**
 * Coda job (Celery/RQ) per file pesanti
-* **Preview live** MediaWiki (renderer lato FE)
+* ✅ **Preview live** MediaWiki (renderer lato FE) - **IMPLEMENTATO**
 * OCR per PDF scansiti (Tesseract)
 * Autenticazione (JWT) per uso protetto
+
+## Supporto ODT/RTF - Implementazione
+
+**Status:** ✅ Completato
+
+**Formati supportati:**
+* **ODT** (OpenDocument Text): Estrazione completa di testo, formattazione e immagini
+* **RTF** (Rich Text Format): Estrazione testo e formattazione (immagini non supportate)
+
+**Librerie utilizzate:**
+* `odfpy` - Parsing file OpenDocument Format
+* `striprtf` - Estrazione testo da file RTF
+
+**Componenti implementati:**
+* `extract_odt.py` - Servizio estrazione ODT con supporto per heading, formattazione, liste e immagini
+* `extract_rtf.py` - Servizio estrazione RTF con rilevamento automatico heading e liste
+* Router aggiornato per gestire i nuovi formati
+* Configurazione aggiornata con `.odt` e `.rtf` in `allowed_extensions`
+* Frontend aggiornato per accettare i nuovi formati nell'upload
+
+**Caratteristiche ODT:**
+* Estrazione immagini da struttura ZIP embedded
+* Riconoscimento stili heading (Heading 1-6)
+* Supporto formattazione bold/italic tramite analisi stili
+* Estrazione liste puntate e numerate
+* Metadata completi (titolo, autore, soggetto)
+
+**Caratteristiche RTF:**
+* Estrazione testo con rilevamento automatico heading
+* Pattern recognition per liste (puntate e numerate)
+* Gestione encoding multipli (UTF-8, Latin-1)
+* Nota automatica su limitazioni immagini
+
+**Limitazioni note:**
+* RTF: Immagini embedded non estratte (consigliato convertire in DOCX)
+* ODT: Template e stili complessi potrebbero non essere interpretati correttamente
+
+**File modificati/creati:**
+* `backend/app/services/extract_odt.py` (NUOVO)
+* `backend/app/services/extract_rtf.py` (NUOVO)
+* `backend/app/routers/convert.py` (MODIFICATO per ODT/RTF)
+* `backend/app/core/config.py` (MODIFICATO allowed_extensions)
+* `frontend/src/app/components/upload/upload.component.html` (MODIFICATO accept)
+* `frontend/src/app/components/upload/upload.component.css` (MODIFICATO styling)
+* `backend/pyproject.toml` (aggiunte dipendenze odfpy, striprtf)
+
+---
+
+## Preview Live MediaWiki - Implementazione
+
+**Status:** ✅ Completato
+
+**Componenti implementati:**
+* `WikitextParserService` - Parser custom basato su regex per conversione markup → HTML
+* `WikitextPreviewComponent` - Componente standalone per rendering preview stile Wikipedia
+* Sistema tabs in `ResultComponent` per switch tra Raw Markup e Preview
+* CSS completo stile Wikipedia con supporto per headers, liste, tabelle, immagini, link
+
+**Funzionalità:**
+* Parsing client-side (zero dipendenze backend)
+* Rendering real-time con sanitizzazione XSS
+* Supporto per: headers (h1-h6), bold/italic, liste (puntate/numerate), tabelle, immagini, link esterni/interni
+* Stile Wikipedia-like con scrollbar custom e responsive design
+* Animazioni smooth per transizioni tra modalità
+
+**Limitazioni note:**
+* Template MediaWiki non supportati ({{Template}})
+* Parser functions non supportate ({{#if:}})
+* Magic words non supportati (__NOTOC__)
+
+**File modificati/creati:**
+* `frontend/src/app/services/wikitext-parser.service.ts` (NUOVO)
+* `frontend/src/app/components/wikitext-preview/` (NUOVO componente completo)
+* `frontend/src/app/components/result/result.component.*` (MODIFICATO per tabs)
+* `frontend/package.json` (dipendenza parse-wikitext)

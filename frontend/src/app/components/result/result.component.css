@@ -1,12 +1,17 @@
+/* Container principale */
 .result-container {
   margin: 20px 0;
 }
 
+/* Titolo */
 h3 {
   color: #2c3e50;
   margin-bottom: 15px;
+  font-size: 1.5em;
+  font-weight: 500;
 }
 
+/* Warnings */
 .warnings {
   background: #f39c12;
   color: white;
@@ -16,25 +21,166 @@ h3 {
 }
 
 .warnings h4 {
-  margin-bottom: 10px;
+  margin: 0 0 10px 0;
   font-size: 16px;
+  font-weight: 600;
 }
 
 .warnings ul {
-  margin-left: 20px;
+  margin: 0 0 0 20px;
+  padding: 0;
 }
 
-.actions {
+.warnings li {
+  margin: 5px 0;
+}
+
+/* Toolbar con actions e tabs */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 15px;
+  padding: 12px 0;
+  border-bottom: 2px solid #e1e4e8;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
+/* Actions buttons */
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  background: #0366d6;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn-action:hover {
+  background: #0256c0;
+  transform: translateY(-1px);
+}
+
+.btn-action:active {
+  transform: translateY(0);
+}
+
+/* View tabs */
+.view-tabs {
+  display: flex;
+  gap: 0;
+  background: #f6f8fa;
+  border-radius: 6px;
+  padding: 4px;
+  border: 1px solid #d1d5da;
+}
+
+.tab-button {
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #586069;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab-button:hover {
+  color: #24292e;
+  background: #e1e4e8;
+}
+
+.tab-button.active {
+  color: #ffffff;
+  background: #0366d6;
+  box-shadow: 0 1px 3px rgba(3, 102, 214, 0.3);
+}
+
+/* Content area */
+.content-area {
+  min-height: 400px;
+  position: relative;
+}
+
+/* Textarea raw markup */
 .wiki-text {
   width: 100%;
   min-height: 400px;
-  font-family: 'Courier New', monospace;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
   font-size: 13px;
+  line-height: 1.5;
   padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: #f9f9f9;
+  border: 1px solid #d1d5da;
+  border-radius: 6px;
+  background: #f6f8fa;
+  color: #24292e;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.wiki-text:focus {
+  outline: none;
+  border-color: #0366d6;
+  box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .btn-action {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .view-tabs {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .tab-button {
+    flex: 1;
+    text-align: center;
+  }
+
+  h3 {
+    font-size: 1.3em;
+  }
+}
+
+/* Animazioni smooth per switch tra modalità */
+.content-area > * {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

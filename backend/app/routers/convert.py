@@ -1,6 +1,6 @@
 """File conversion router.
 
-Handles PDF/DOCX upload and conversion to MediaWiki format.
+Handles PDF/DOCX/ODT/RTF upload and conversion to MediaWiki format.
 """
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
@@ -9,7 +9,9 @@ from app.core.config import config
 from app.models.dto import ConvertResponse
 from app.services.convert_wikitext import to_wikitext
 from app.services.extract_docx import extract_docx
+from app.services.extract_odt import extract_odt
 from app.services.extract_pdf import extract_pdf
+from app.services.extract_rtf import extract_rtf
 from app.services.storage import (
     cleanup_upload,
     generate_job_id,
@@ -23,14 +25,20 @@ router = APIRouter(tags=["convert"])
 @router.post(
     "/convert",
     response_model=ConvertResponse,
-    summary="Convert PDF/DOCX to MediaWiki markup",
-    description="Upload a PDF or DOCX file and receive MediaWiki formatted text with extracted images",
+    summary="Convert PDF/DOCX/ODT/RTF to MediaWiki markup",
+    description="Upload a PDF, DOCX, ODT, or RTF file and receive MediaWiki formatted text with extracted images",
 )
 async def convert_file(file: UploadFile = File(...)) -> ConvertResponse:
-    """Convert uploaded PDF/DOCX file to MediaWiki format.
+    """Convert uploaded document file to MediaWiki format.
+
+    Supported formats:
+    - PDF: Full text and image extraction
+    - DOCX: Full text and image extraction
+    - ODT: Full text and image extraction (OpenDocument Text)
+    - RTF: Text extraction only (images not supported)
 
     Args:
-        file: Uploaded PDF or DOCX file
+        file: Uploaded document file (PDF, DOCX, ODT, or RTF)
 
     Returns:
         ConvertResponse with converted text, images, and warnings
@@ -78,6 +86,10 @@ async def convert_file(file: UploadFile = File(...)) -> ConvertResponse:
             extracted = extract_pdf(upload_path, job_id)
         elif ext == "docx":
             extracted = extract_docx(upload_path, job_id)
+        elif ext == "odt":
+            extracted = extract_odt(upload_path, job_id)
+        elif ext == "rtf":
+            extracted = extract_rtf(upload_path, job_id)
         else:
             raise HTTPException(status_code=400, detail="Unsupported file type")
     except Exception as e:

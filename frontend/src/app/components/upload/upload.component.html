@@ -1,10 +1,11 @@
 <div class="upload-container">
-  <h2>Upload PDF or Word Document</h2>
+  <h2>Upload Document</h2>
+  <p class="subtitle">Supported formats: PDF, DOCX, ODT, RTF</p>
 
   <div class="upload-form">
     <input
       type="file"
-      accept=".pdf,.docx"
+      accept=".pdf,.docx,.odt,.rtf"
       (change)="onFileSelected($event)"
       [disabled]="loading"
     />

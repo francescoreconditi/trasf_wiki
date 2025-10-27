@@ -36,7 +36,8 @@
       "Bash(cmd.exe /c \"netstat -ano | findstr :8000\")",
       "Bash(tasklist:*)",
       "Bash(findstr:*)",
-      "Bash(cmd.exe /c \"tasklist | findstr ConvertitorePDF\")"
+      "Bash(cmd.exe /c \"tasklist | findstr ConvertitorePDF\")",
+      "Bash(uv run:*)"
     ],
     "deny": [],
     "ask": []

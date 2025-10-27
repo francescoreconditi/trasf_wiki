@@ -89,13 +89,13 @@ if frontend_build_path.exists():
     assets_path = frontend_build_path / "assets"
     if assets_path.exists():
         app.mount("/assets", StaticFiles(directory=str(assets_path)), name="assets")
-        print("[STARTUP] ✅ Mounted /assets")
+        print("[STARTUP] [OK] Mounted /assets")
 
     # Mount other static files (js, css, etc.)
     app.mount("/static", StaticFiles(directory=str(frontend_build_path)), name="static")
-    print("[STARTUP] ✅ Mounted /static")
+    print("[STARTUP] [OK] Mounted /static")
 else:
-    print("[STARTUP] ⚠️  Frontend build directory NOT FOUND!")
+    print("[STARTUP] [WARN] Frontend build directory NOT FOUND!")
 
 
 @app.get("/", include_in_schema=False)

@@ -26,7 +26,7 @@ class AppConfig(BaseModel):
     output_dir: Path = Field(default_factory=lambda: Path("output/testo_wiki"))
 
     # File restrictions
-    allowed_extensions: set[str] = Field(default={".pdf", ".docx"})
+    allowed_extensions: set[str] = Field(default={".pdf", ".docx", ".odt", ".rtf"})
     max_file_size_mb: int = Field(default=50)
 
     # File naming

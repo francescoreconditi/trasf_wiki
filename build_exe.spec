@@ -63,6 +63,20 @@ a = Analysis(
         'lxml._elementpath',
         'lxml.etree',
 
+        # ODT processing (odfpy)
+        'odf',
+        'odf.opendocument',
+        'odf.text',
+        'odf.teletype',
+        'odf.table',
+        'odf.style',
+        'defusedxml',
+        'defusedxml.ElementTree',
+
+        # RTF processing
+        'striprtf',
+        'striprtf.striprtf',
+
         # Image processing
         'PIL',
         'PIL._imaging',

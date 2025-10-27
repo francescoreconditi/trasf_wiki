@@ -1,6 +1,7 @@
 <div class="result-container">
   <h3>MediaWiki Text</h3>
 
+  <!-- Warnings section -->
   <div class="warnings" *ngIf="result.warnings && result.warnings.length > 0">
     <h4>Warnings:</h4>
     <ul>
@@ -8,15 +9,48 @@
     </ul>
   </div>
 
-  <div class="actions">
-    <button (click)="copyToClipboard()">Copy to Clipboard</button>
-    <button (click)="downloadAsFile()">Download as .wiki</button>
+  <!-- Actions e View Mode Tabs -->
+  <div class="toolbar">
+    <div class="actions">
+      <button (click)="copyToClipboard()" class="btn-action">
+        Copy to Clipboard
+      </button>
+      <button (click)="downloadAsFile()" class="btn-action">
+        Download as .wiki
+      </button>
+    </div>
+
+    <div class="view-tabs">
+      <button
+        [class.active]="viewMode === 'raw'"
+        (click)="setViewMode('raw')"
+        class="tab-button">
+        Raw Markup
+      </button>
+      <button
+        [class.active]="viewMode === 'preview'"
+        (click)="setViewMode('preview')"
+        class="tab-button">
+        Preview
+      </button>
+    </div>
   </div>
 
-  <textarea
-    [value]="result.mediawiki_text"
-    rows="20"
-    readonly
-    class="wiki-text"
-  ></textarea>
+  <!-- Contenuto visualizzato in base alla modalità -->
+  <div class="content-area">
+    <!-- Raw text view (textarea) -->
+    <textarea
+      *ngIf="viewMode === 'raw'"
+      [value]="result.mediawiki_text"
+      rows="20"
+      readonly
+      class="wiki-text"
+    ></textarea>
+
+    <!-- Preview renderizzata -->
+    <app-wikitext-preview
+      *ngIf="viewMode === 'preview'"
+      [wikitext]="result.mediawiki_text">
+    </app-wikitext-preview>
+  </div>
 </div>

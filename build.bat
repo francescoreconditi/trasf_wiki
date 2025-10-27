@@ -101,21 +101,30 @@ python -c "import PyInstaller" >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo [INFO] PyInstaller non trovato, installazione in corso...
     python -m pip install pyinstaller
+
+    REM Verifica che PyInstaller sia stato installato correttamente
+    python -c "import PyInstaller" >nul 2>&1
     if %ERRORLEVEL% NEQ 0 (
-        echo [ERROR] Installazione PyInstaller fallita!
+        echo [ERROR] PyInstaller non installato correttamente!
         pause
         exit /b 1
     )
+    echo       - PyInstaller installato con successo
 )
-python -c "import pymupdf, docx, PIL, lxml" >nul 2>&1
+python -c "import pymupdf, docx, PIL, lxml, odf, striprtf" >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo [INFO] Dipendenze backend mancanti, installazione in corso...
-    python -m pip install pymupdf python-docx pillow lxml
+    python -m pip install pymupdf python-docx pillow lxml odfpy striprtf
+
+    REM Verifica che l'installazione sia riuscita verificando di nuovo gli import
+    python -c "import pymupdf, docx, PIL, lxml, odf, striprtf" >nul 2>&1
     if %ERRORLEVEL% NEQ 0 (
-        echo [ERROR] Installazione dipendenze fallita!
+        echo [ERROR] Alcune dipendenze non sono state installate correttamente!
+        echo [ERROR] Verifica manualmente con: python -c "import pymupdf, docx, PIL, lxml, odf, striprtf"
         pause
         exit /b 1
     )
+    echo       - Dipendenze installate con successo
 )
 echo       - Dipendenze verificate
 
@@ -146,12 +155,12 @@ echo.
 echo 1. Esegui dist\ConvertitorePDF.exe
 echo 2. Click su "Avvia Applicazione"
 echo 3. Click su "Apri nel Browser"
-echo 4. Carica un PDF o DOCX per convertirlo
+echo 4. Carica un documento (PDF/DOCX/ODT/RTF) per convertirlo
 echo.
 echo L'applicazione include:
 echo   - Server FastAPI integrato (porta 8001)
-echo   - Frontend Angular
-echo   - Conversione PDF/DOCX a MediaWiki
+echo   - Frontend Angular con preview live
+echo   - Conversione PDF/DOCX/ODT/RTF a MediaWiki
 echo   - Estrazione e download immagini
 echo.
 echo ========================================

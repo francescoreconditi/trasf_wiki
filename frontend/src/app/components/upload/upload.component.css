@@ -4,6 +4,13 @@
 
 h2 {
   color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-top: 0;
   margin-bottom: 20px;
 }
 
