@@ -3,6 +3,7 @@
 This module handles extraction of text and images from PDF files.
 """
 
+import re
 from pathlib import Path
 
 import fitz  # PyMuPDF
@@ -41,6 +42,67 @@ def _detect_heading_level(font_size: float, base_font_size: float) -> int:
         return 4
     else:
         return 0  # Normal text
+
+
+def _merge_consecutive_headings(text: str) -> str:
+    """Merge consecutive headings of the same level that are likely part of the same title.
+
+    When a title in the PDF is split across multiple lines, it gets extracted as
+    multiple heading markers. This function merges them back together.
+
+    Args:
+        text: Extracted text with HEADING markers
+
+    Returns:
+        Text with consecutive headings of the same level merged
+    """
+    lines = text.split("\n")
+    result = []
+    i = 0
+
+    while i < len(lines):
+        line = lines[i].strip()
+
+        # Check if this is a heading
+        if line.startswith("HEADING"):
+            # Extract level and text
+            match = re.match(r"HEADING(\d):(.*)", line)
+            if match:
+                level = match.group(1)
+                heading_text = match.group(2).strip()
+
+                # Look ahead for consecutive headings of the same level
+                j = i + 1
+                while j < len(lines):
+                    next_line = lines[j].strip()
+
+                    # Check if it's empty line (skip it)
+                    if not next_line:
+                        j += 1
+                        continue
+
+                    # Check if it's another heading of the same level
+                    next_match = re.match(r"HEADING(\d):(.*)", next_line)
+                    if next_match and next_match.group(1) == level:
+                        # Merge with current heading
+                        heading_text += " " + next_match.group(2).strip()
+                        j += 1
+                    else:
+                        # Different level or not a heading - stop merging
+                        break
+
+                # Add merged heading
+                result.append(f"HEADING{level}:{heading_text}")
+
+                # Skip the lines we merged
+                i = j
+                continue
+
+        # Not a heading or not matched - add as is
+        result.append(lines[i])
+        i += 1
+
+    return "\n".join(result)
 
 
 def extract_pdf(file_path: Path, job_id: str | None = None) -> ExtractedData:
@@ -244,5 +306,8 @@ def extract_pdf(file_path: Path, job_id: str | None = None) -> ExtractedData:
 
     # Combine all text
     full_text = "\n".join(text_content)
+
+    # Post-process: merge consecutive headings of the same level
+    full_text = _merge_consecutive_headings(full_text)
 
     return ExtractedData(text=full_text, images=images_list, metadata=metadata)
