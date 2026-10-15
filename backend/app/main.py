@@ -3,7 +3,6 @@
 This is the entry point for the PDF/Word to MediaWiki conversion API.
 """
 
-import os
 import sys
 from pathlib import Path
 

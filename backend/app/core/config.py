@@ -5,7 +5,6 @@ paths, file limits, and allowed file types.
 """
 
 from pathlib import Path
-from typing import Literal
 
 from pydantic import BaseModel, Field
 

@@ -43,6 +43,26 @@ export class WikitextPreviewComponent implements OnChanges {
   }
 
   /**
+   * Gestisce i link alle sezioni ([[#Sezione|Testo]]): scorre fino al titolo
+   * con lo stesso testo invece di navigare (href="#" cambierebbe la route)
+   */
+  onPreviewClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    const link = target?.closest('a.wiki-anchor') as HTMLAnchorElement | null;
+    if (!link) {
+      return;
+    }
+
+    event.preventDefault();
+    const normalize = (text: string | null) => (text ?? '').replace(/\s+/g, ' ').trim();
+    const section = normalize(link.getAttribute('title'));
+    const container = event.currentTarget as HTMLElement;
+    const headings = Array.from(container.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+    const heading = headings.find(h => normalize(h.textContent) === section);
+    heading?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /**
    * Renderizza il markup MediaWiki in HTML
    */
   private renderPreview(): void {

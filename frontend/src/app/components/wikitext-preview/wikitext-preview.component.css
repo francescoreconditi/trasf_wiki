@@ -152,8 +152,8 @@
   margin-bottom: 0.2em;
 }
 
-/* Tabelle stile wikitable */
-.wiki-preview table.wikitable {
+/* Tabelle stile zcsTable */
+.wiki-preview table.zcsTable {
   border-collapse: collapse;
   border: 1px solid #a2a9b1;
   background: #f8f9fa;
@@ -161,7 +161,7 @@
   width: 100%;
 }
 
-.wiki-preview table.wikitable th {
+.wiki-preview table.zcsTable th {
   background-color: #eaecf0;
   font-weight: 600;
   text-align: left;
@@ -169,13 +169,13 @@
   padding: 0.4em 0.6em;
 }
 
-.wiki-preview table.wikitable td {
+.wiki-preview table.zcsTable td {
   border: 1px solid #a2a9b1;
   padding: 0.4em 0.6em;
   background: #ffffff;
 }
 
-.wiki-preview table.wikitable tr:hover {
+.wiki-preview table.zcsTable tr:hover {
   background: #f8f9fa;
 }
 

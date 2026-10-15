@@ -46,8 +46,20 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
+REM Use the global Python even if a virtualenv (e.g. backend\.venv) is
+REM active in this terminal: PyInstaller cannot locate Tcl/Tk in the
+REM uv-managed Python of the venv and silently drops tkinter from the EXE.
+setlocal
+set "VIRTUAL_ENV="
+where py >nul 2>nul
+if %ERRORLEVEL% EQU 0 (
+    set "PYTHON=py -3"
+) else (
+    set "PYTHON=python"
+)
+
 REM Check if Python is installed
-where python >nul 2>nul
+%PYTHON% --version >nul 2>nul
 if %ERRORLEVEL% NEQ 0 (
     echo [ERROR] Python non trovato! Installare Python prima di continuare.
     pause
@@ -97,13 +109,13 @@ echo       - Codice formattato
 
 echo.
 echo [5/6] Verifica dipendenze Python globali...
-python -c "import PyInstaller" >nul 2>&1
+%PYTHON% -c "import PyInstaller" >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo [INFO] PyInstaller non trovato, installazione in corso...
-    python -m pip install pyinstaller
+    %PYTHON% -m pip install pyinstaller
 
     REM Verifica che PyInstaller sia stato installato correttamente
-    python -c "import PyInstaller" >nul 2>&1
+    %PYTHON% -c "import PyInstaller" >nul 2>&1
     if %ERRORLEVEL% NEQ 0 (
         echo [ERROR] PyInstaller non installato correttamente!
         pause
@@ -111,16 +123,16 @@ if %ERRORLEVEL% NEQ 0 (
     )
     echo       - PyInstaller installato con successo
 )
-python -c "import pymupdf, docx, PIL, lxml, odf, striprtf" >nul 2>&1
+%PYTHON% -c "import fastapi, uvicorn, pydantic, multipart, pymupdf, docx, PIL, lxml, odf, striprtf" >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo [INFO] Dipendenze backend mancanti, installazione in corso...
-    python -m pip install pymupdf python-docx pillow lxml odfpy striprtf
+    %PYTHON% -m pip install fastapi uvicorn pydantic python-multipart pymupdf python-docx pillow lxml odfpy striprtf
 
     REM Verifica che l'installazione sia riuscita verificando di nuovo gli import
-    python -c "import pymupdf, docx, PIL, lxml, odf, striprtf" >nul 2>&1
+    %PYTHON% -c "import fastapi, uvicorn, pydantic, multipart, pymupdf, docx, PIL, lxml, odf, striprtf" >nul 2>&1
     if %ERRORLEVEL% NEQ 0 (
         echo [ERROR] Alcune dipendenze non sono state installate correttamente!
-        echo [ERROR] Verifica manualmente con: python -c "import pymupdf, docx, PIL, lxml, odf, striprtf"
+        echo [ERROR] Verifica manualmente con: %PYTHON% -c "import fastapi, uvicorn, pydantic, multipart, pymupdf, docx, PIL, lxml, odf, striprtf"
         pause
         exit /b 1
     )
@@ -131,7 +143,17 @@ echo       - Dipendenze verificate
 echo.
 echo [6/6] Creazione eseguibile con PyInstaller...
 echo       (Usando Python globale: %PYTHON%)
-python -m PyInstaller build_exe.spec --noconfirm
+REM The GUI launcher needs tkinter: if PyInstaller can't find Tcl/Tk it
+REM silently leaves tkinter out and the EXE fails at startup
+%PYTHON% -c "import tkinter; from PyInstaller.utils.hooks.tcl_tk import tcltk_info; raise SystemExit(0 if tcltk_info.available else 1)" >nul 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] Tcl/Tk non disponibile per PyInstaller con %PYTHON%:
+    echo [ERROR] l'EXE non potrebbe avviare l'interfaccia grafica.
+    echo [ERROR] Usare un Python installato da python.org con l'opzione "tcl/tk and IDLE".
+    pause
+    exit /b 1
+)
+%PYTHON% -m PyInstaller build_exe.spec --noconfirm
 if %ERRORLEVEL% NEQ 0 (
     echo [ERROR] Creazione eseguibile fallito!
     pause

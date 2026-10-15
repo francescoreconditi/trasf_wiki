@@ -21,8 +21,23 @@ if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
+# Use the global Python even if a virtualenv (e.g. backend\.venv) is active:
+# PyInstaller cannot locate Tcl/Tk in the uv-managed Python of the venv and
+# silently drops tkinter from the EXE (the GUI launcher then fails to start)
+$env:VIRTUAL_ENV = $null
+if (Get-Command py -ErrorAction SilentlyContinue) {
+    $PythonExe = "py"
+    $PythonArgs = @("-3")
+} else {
+    $PythonExe = "python"
+    $PythonArgs = @()
+}
+$Python = @($PythonExe) + $PythonArgs
+function Invoke-Python { & $PythonExe @PythonArgs @args }
+
 # Check if Python is installed
-if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
+Invoke-Python --version *> $null
+if ($LASTEXITCODE -ne 0) {
     Write-Host "[ERROR] Python non trovato! Installare Python prima di continuare." -ForegroundColor Red
     Read-Host "Premi INVIO per uscire"
     exit 1
@@ -66,23 +81,33 @@ if (-not (Test-Path "frontend\dist\pdf-word-mediawiki\browser\index.html")) {
 Write-Host "      - Build frontend verificato" -ForegroundColor Green
 
 Write-Host ""
-Write-Host "[4/5] Installazione PyInstaller..." -ForegroundColor Cyan
-Set-Location backend
-uv pip install pyinstaller
-
+Write-Host "[4/5] Verifica dipendenze Python globali ($($Python -join ' '))..." -ForegroundColor Cyan
+$imports = "import PyInstaller, fastapi, uvicorn, pydantic, multipart, pymupdf, docx, PIL, lxml, odf, striprtf"
+Invoke-Python -c $imports *> $null
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "[ERROR] Installazione PyInstaller fallito!" -ForegroundColor Red
-    Set-Location ..
+    Write-Host "      - Installazione dipendenze mancanti..."
+    Invoke-Python -m pip install pyinstaller fastapi uvicorn pydantic python-multipart pymupdf python-docx pillow lxml odfpy striprtf
+    Invoke-Python -c $imports *> $null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[ERROR] Dipendenze Python non installate correttamente!" -ForegroundColor Red
+        Read-Host "Premi INVIO per uscire"
+        exit 1
+    }
+}
+
+# The GUI launcher needs tkinter: without Tcl/Tk PyInstaller leaves it out
+Invoke-Python -c "import tkinter; from PyInstaller.utils.hooks.tcl_tk import tcltk_info; raise SystemExit(0 if tcltk_info.available else 1)" *> $null
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "[ERROR] Tcl/Tk non disponibile per PyInstaller: l'EXE non potrebbe avviare l'interfaccia grafica." -ForegroundColor Red
+    Write-Host "[ERROR] Usare un Python installato da python.org con l'opzione 'tcl/tk and IDLE'." -ForegroundColor Red
     Read-Host "Premi INVIO per uscire"
     exit 1
 }
-
-Set-Location ..
-Write-Host "      - PyInstaller installato" -ForegroundColor Green
+Write-Host "      - Dipendenze verificate" -ForegroundColor Green
 
 Write-Host ""
 Write-Host "[5/5] Creazione eseguibile..." -ForegroundColor Cyan
-uv run pyinstaller build_exe.spec --clean
+Invoke-Python -m PyInstaller build_exe.spec --clean --noconfirm
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[ERROR] Creazione eseguibile fallito!" -ForegroundColor Red

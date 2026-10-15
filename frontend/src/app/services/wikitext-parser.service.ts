@@ -78,67 +78,56 @@ export class WikitextParserService {
   }
 
   /**
-   * Converte liste puntate e numerate
+   * Converte liste puntate e numerate, anche annidate e miste
    * * item -> <ul><li>
    * # item -> <ol><li>
+   * #* item -> <ol><li><ul><li> (elenco puntato dentro un elenco numerato)
    */
   private parseLists(text: string): string {
     const lines = text.split('\n');
     const result: string[] = [];
-    let inList = false;
-    let listType: 'ul' | 'ol' | null = null;
-    let prevLevel = 0;
+    // Tipo di ogni livello di lista aperto (indice 0 = primo livello)
+    const open: ('ul' | 'ol')[] = [];
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const ulMatch = line.match(/^(\*+)\s+(.+)$/);
-      const olMatch = line.match(/^(#+)\s+(.+)$/);
+    const closeTo = (depth: number) => {
+      while (open.length > depth) {
+        result.push(`</li></${open.pop()}>`);
+      }
+    };
 
-      if (ulMatch || olMatch) {
-        const match = ulMatch || olMatch;
-        const level = match![1].length;
-        const content = match![2];
-        const currentType = ulMatch ? 'ul' : 'ol';
-
-        // Apri lista se necessario
-        if (!inList) {
-          result.push(`<${currentType} class="wiki-list">`);
-          inList = true;
-          listType = currentType;
-          prevLevel = level;
-        } else if (level > prevLevel) {
-          // Lista nested
-          result.push(`<${currentType} class="wiki-list-nested">`);
-        } else if (level < prevLevel) {
-          // Chiudi livello nested
-          for (let j = 0; j < prevLevel - level; j++) {
-            result.push(`</li></${listType}>`);
-          }
-        }
-
-        result.push(`<li>${content}</li>`);
-        prevLevel = level;
-      } else {
-        // Chiudi lista se eravamo in una lista
-        if (inList) {
-          for (let j = 0; j < prevLevel; j++) {
-            result.push(`</${listType}>`);
-          }
-          inList = false;
-          listType = null;
-          prevLevel = 0;
-        }
+    for (const line of lines) {
+      const match = line.match(/^([*#]+)\s+(.+)$/);
+      if (!match) {
+        closeTo(0);
         result.push(line);
+        continue;
       }
+
+      const types = Array.from(match[1], c => (c === '#' ? 'ol' : 'ul') as 'ul' | 'ol');
+
+      // Livelli già aperti con lo stesso tipo del nuovo prefisso
+      let common = 0;
+      while (common < open.length && common < types.length && open[common] === types[common]) {
+        common++;
+      }
+
+      if (common === types.length) {
+        // Stesso livello (eventualmente risalendo da un annidamento): nuova voce
+        closeTo(types.length);
+        result.push('</li>');
+      } else {
+        // Chiudi i livelli divergenti e apri quelli mancanti dentro la voce corrente
+        closeTo(common);
+        while (open.length < types.length) {
+          const type = types[open.length];
+          result.push(`<${type} class="${open.length ? 'wiki-list-nested' : 'wiki-list'}">`);
+          open.push(type);
+        }
+      }
+      result.push(`<li>${match[2]}`);
     }
 
-    // Chiudi eventuali liste aperte alla fine
-    if (inList) {
-      for (let j = 0; j < prevLevel; j++) {
-        result.push(`</${listType}>`);
-      }
-    }
-
+    closeTo(0);
     return result.join('\n');
   }
 
@@ -153,6 +142,12 @@ export class WikitextParserService {
 
     // Link esterni senza testo: [http://url]
     text = text.replace(/\[(\S+:\/\/\S+)\]/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+
+    // Link a sezioni della pagina: [[#Sezione|Testo]] e [[#Sezione]]
+    // L'id viene rimosso dal sanitizer di Angular: la sezione di destinazione
+    // e' indicata nel title e risolta al click dal componente di anteprima
+    text = text.replace(/\[\[#([^|\]]+)\|([^\]]+)\]\]/g, '<a href="#" class="wiki-anchor" title="$1">$2</a>');
+    text = text.replace(/\[\[#([^\]]+)\]\]/g, '<a href="#" class="wiki-anchor" title="$1">$1</a>');
 
     // Link interni wiki: [[PageName|Display Text]]
     text = text.replace(/\[\[([^|\]]+)\|([^\]]+)\]\]/g, '<a href="#" class="wiki-link" title="$1">$2</a>');
@@ -194,7 +189,7 @@ export class WikitextParserService {
 
   /**
    * Converte tabelle MediaWiki
-   * {| class="wikitable"
+   * {| class="zcsTable"
    * |-
    * ! Header
    * |-
@@ -206,7 +201,7 @@ export class WikitextParserService {
     const tableRegex = /\{\|([^\n]*)\n([\s\S]*?)\n\|\}/g;
 
     text = text.replace(tableRegex, (match, attributes, content) => {
-      let html = '<table class="wikitable">\n';
+      let html = '<table class="zcsTable">\n';
 
       const rows = content.split(/\n\|-/).filter((row: string) => row.trim() !== '');
 
@@ -214,7 +209,7 @@ export class WikitextParserService {
         html += '<tr>';
 
         // Header cells: ! content
-        const headerCells = row.match(/^!\s*(.+?)(?=\n[!|]|\n|$)/gm);
+        const headerCells = row.match(/^![ \t]*(.*?)(?=\n[!|]|\n|$)/gm);
         if (headerCells) {
           for (const cell of headerCells) {
             const cellContent = cell.replace(/^!\s*/, '').trim();
@@ -223,11 +218,12 @@ export class WikitextParserService {
         }
 
         // Data cells: | content
-        const dataCells = row.match(/^\|\s*(.+?)(?=\n[!|]|\n|$)/gm);
+        const dataCells = row.match(/^\|[ \t]*(.*?)(?=\n[!|]|\n|$)/gm);
         if (dataCells) {
           for (const cell of dataCells) {
             const cellContent = cell.replace(/^\|\s*/, '').trim();
-            if (cellContent && !cellContent.startsWith('-')) {
+            // Le celle vuote vanno mantenute per non disallineare le colonne
+            if (!cellContent.startsWith('-')) {
               html += `<td>${cellContent}</td>`;
             }
           }

@@ -9,7 +9,8 @@
     *ngIf="wikitext && wikitext.trim() !== ''"
     class="wiki-preview"
     [class.has-error]="hasError"
-    [innerHTML]="renderedHtml">
+    [innerHTML]="renderedHtml"
+    (click)="onPreviewClick($event)">
   </div>
 
   <!-- Nota informativa -->

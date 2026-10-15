@@ -3,7 +3,6 @@
 This module handles extraction of text and images from OpenDocument Text files.
 """
 
-import base64
 import zipfile
 from pathlib import Path
 

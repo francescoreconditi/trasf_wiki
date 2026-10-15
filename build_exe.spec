@@ -58,7 +58,6 @@ a = Analysis(
         'pymupdf',
         'fitz',
         'docx',
-        'python_docx',
         'lxml',
         'lxml._elementpath',
         'lxml.etree',

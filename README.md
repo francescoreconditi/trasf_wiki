@@ -269,7 +269,7 @@ Il convertitore applica queste regole di formattazione MediaWiki:
 - **Grassetto**: `'''testo'''`
 - **Corsivo**: `''testo''`
 - **Liste**: Numerate (`#`) e puntate (`*`)
-- **Tabelle**: formato `{| class="wikitable"`
+- **Tabelle**: formato `{| class="zcsTable"`
 - **Link**: `[http://url testo]`
 - **Immagini**: `[[File:nomefile|thumb]]`
 

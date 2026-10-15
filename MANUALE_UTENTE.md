@@ -120,7 +120,7 @@ Questo è il testo convertito.
 * Lista puntata
 * Altro elemento
 
-{| class="wikitable"
+{| class="zcsTable"
 |-
 | Cella 1 | Cella 2
 |}

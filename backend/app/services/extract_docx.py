@@ -157,9 +157,12 @@ def extract_docx(file_path: Path, job_id: str | None = None) -> ExtractedData:
             if not para.text.strip() and not has_images_in_para:
                 continue
 
+            # A paragraph may have no style (or a style without name)
+            style_name = (para.style.name if para.style else None) or ""
+
             # Detect heading styles (only if there's text)
-            if para.text.strip() and para.style.name.startswith("Heading"):
-                level = para.style.name.replace("Heading", "").strip()
+            if para.text.strip() and style_name.startswith("Heading"):
+                level = style_name.replace("Heading", "").strip()
                 if level.isdigit():
                     text_content.append(f"HEADING{level}:{para.text.strip()}")
                 else:
@@ -177,7 +180,6 @@ def extract_docx(file_path: Path, job_id: str | None = None) -> ExtractedData:
             # Lists are identified by the presence of numPr in paragraph properties
             if para._p.pPr is not None and para._p.pPr.numPr is not None:
                 num_pr = para._p.pPr.numPr
-                ilvl = num_pr.ilvl  # Indentation level
 
                 # Try to determine if it's numbered or bulleted
                 # Numbered lists typically have numFmt, bulleted have bullets
@@ -203,7 +205,7 @@ def extract_docx(file_path: Path, job_id: str | None = None) -> ExtractedData:
                 continue
 
             # Also check for "List" style names as fallback
-            if "List" in para.style.name:
+            if "List" in style_name:
                 formatted_text = _extract_formatted_text(para, image_map)
                 # Default to bullet for List styles
                 text_content.append(f"LIST_BULLET:{formatted_text}")
